@@ -10,21 +10,23 @@ type Server struct {
 	Network string
 	Address string
 	Handler Handler
+
+	listener io.Closer
 }
 
-func (s Server) ListenAndServe() error {
+func (s *Server) ListenAndServe() error {
 	l, err := Listen(s.Network, s.Address)
 	if err != nil {
 		return err
 	}
-	defer l.Close()
+	s.listener = l
 
 	for {
 		conn, err := l.Accept()
 		if err != nil {
 			return err
 		}
-		defer conn.Close()
+		defer l.Close()
 
 		go conn.Listen()
 
@@ -57,6 +59,11 @@ func (s Server) ListenAndServe() error {
 			}
 		}()
 	}
+}
+
+// Shutdown stops the server.
+func (s *Server) Shutdown() {
+	s.listener.Close()
 }
 
 type Handler interface {
