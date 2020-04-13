@@ -26,7 +26,7 @@ func (s *Server) ListenAndServe() error {
 		if err != nil {
 			return err
 		}
-		defer l.Close()
+		defer conn.Close()
 
 		go conn.Listen()
 
@@ -40,21 +40,9 @@ func (s *Server) ListenAndServe() error {
 				go func() {
 					go stream.Poll()
 
-					var buf bytes.Buffer
-					out := make([]byte, 512)
-					for {
-						n, err := stream.Read(out)
-						if err == io.EOF {
-							break
-						}
-						buf.Write(out[:n])
-					}
-
-					var b bytes.Buffer
-					w := bufio.NewWriter(&b)
-					s.Handler.Serve(w, bytes.NewReader(buf.Bytes()))
-					w.Flush()
-					stream.WriteOnce(b.Bytes())
+					var w bytes.Buffer
+					s.Handler.Serve(&w, bufio.NewReader(stream))
+					stream.WriteOnce(w.Bytes())
 				}()
 			}
 		}()

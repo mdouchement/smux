@@ -46,7 +46,7 @@ func (s Stream) WriteOnce(b []byte) (int, error) {
 func (s Stream) write(b []byte, seal bool) (int, error) {
 	frames := packing(s.id, b, seal)
 	sum := 0
-	for i, _ := range frames {
+	for i := range frames {
 		n, err := s.conn.Write(frames[i])
 		if err != nil {
 			return 0, err

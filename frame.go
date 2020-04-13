@@ -27,7 +27,7 @@ func packing(id uint32, b []byte, seal bool) []Frame {
 		frame[3] = uint8(flag)
 		binary.BigEndian.PutUint32(frame[4:8], id)
 		payload := b[i*NUM_BYTES_MAX_PAYLOAD : i*NUM_BYTES_MAX_PAYLOAD+length]
-		for j, _ := range payload {
+		for j := range payload {
 			frame[NUM_BYTES_HEADER+j] = payload[j]
 		}
 		frames[i] = frame

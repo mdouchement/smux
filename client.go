@@ -1,8 +1,7 @@
 package smux
 
 import (
-	"bytes"
-	"io"
+	"io/ioutil"
 	"sync"
 )
 
@@ -27,16 +26,7 @@ func (c *Client) Post(b []byte) ([]byte, error) {
 
 	go stream.Poll()
 
-	var buf bytes.Buffer
-	out := make([]byte, 1024)
-	for {
-		n, err := stream.Read(out)
-		if err == io.EOF {
-			break
-		}
-		buf.Write(out[:n])
-	}
-	return buf.Bytes(), nil
+	return ioutil.ReadAll(stream)
 }
 
 func (c *Client) getStream() (Stream, error) {

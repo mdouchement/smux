@@ -33,7 +33,7 @@ listen:
 				break
 			}
 		}
-		length, _, flag, streamId := parseHeader(buf.Bytes())
+		length, _, flag, streamID := parseHeader(buf.Bytes())
 
 		if length > 0 {
 			// Read payload
@@ -54,12 +54,12 @@ listen:
 			payload := buf.Bytes()
 
 			// Write payload to stream
-			if _, ok := c.streams.Load(streamId); !ok {
+			if _, ok := c.streams.Load(streamID); !ok {
 				stream := make(chan []byte, 10)
-				c.streams.Store(streamId, stream)
-				c.ch <- NewStream(streamId, stream, c)
+				c.streams.Store(streamID, stream)
+				c.ch <- NewStream(streamID, stream, c)
 			}
-			v, _ := c.streams.Load(streamId)
+			v, _ := c.streams.Load(streamID)
 			stream := v.(chan []byte)
 			select {
 			case stream <- payload:
@@ -68,10 +68,10 @@ listen:
 			}
 		}
 		if flag == FLAG_DATA_END_STREAM {
-			if v, ok := c.streams.Load(streamId); ok {
+			if v, ok := c.streams.Load(streamID); ok {
 				stream := v.(chan []byte)
 				close(stream)
-				c.streams.Delete(streamId)
+				c.streams.Delete(streamID)
 			}
 		}
 	}

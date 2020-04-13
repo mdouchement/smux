@@ -60,7 +60,7 @@ func main() {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				for _ = range ch {
+				for range ch {
 					err := client.Post()
 					if err != nil {
 						errCnt++
@@ -492,7 +492,7 @@ func httpHandler(data []byte) func(http.ResponseWriter, *http.Request) {
 
 func requestData() []byte {
 	q := make([]float32, 256)
-	for i, _ := range q {
+	for i := range q {
 		q[i] = rand.Float32()
 	}
 	req, _ := json.Marshal(Request{Query: q})
@@ -501,7 +501,7 @@ func requestData() []byte {
 
 func responseData() []byte {
 	ids := make([]int, 10)
-	for i, _ := range ids {
+	for i := range ids {
 		ids[i] = rand.Int()
 	}
 	res, _ := json.Marshal(Response{Ids: ids})
